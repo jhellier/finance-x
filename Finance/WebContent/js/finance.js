@@ -1,17 +1,16 @@
 !function() {
 
 /*
- * Salary is a set visualizations that show the ability of a company
- * to pay a higher salary without it adversely affecting the profitability.
- * There will be some companies that make so much profit that they can pay a higher salary
- * while others are so marginal that paying any more will lead to even more of
- * a loss. The highly profitable companies have a huge advantage which this visualization
- * shows they are not taking advantage of. 
+ * Finance is a base visualization for supporting story telling of financial conditions
+ * with a set of companies. From the base view which shows the annual report
+ * numbers, a story can be created. The first one created is Salary. This story
+ * shows if a company has the income to pay everyone $100K more a year. The idea
+ * is to see which companies are the most viable and which are marginal.
  * 
  * 
  */	
 
-	var salary = {
+	var finance = {
 		version : "1.0"
 	};
 	
@@ -28,8 +27,7 @@
 	                       {"id":"sortByOperatingColor","label":"Operating Expenses"},
 	                       {"id":"sortByPreTaxIncomeColor","label":"Pre-Tax Income"},
 	                       {"id":"sortByTaxPaidColor","label":"Tax Paid"},
-	                       {"id":"sortByIncomeColor","label":"Income"},
-	                       {"id":"sort100KColor","label":"100K"}
+	                       {"id":"sortByIncomeColor","label":"Income"}
 	                       ];
 	
 	var companyButtonColor = d3.scale.category20();
@@ -93,15 +91,6 @@
 			d.IncomeEmp = (Number(d.Income)/Number(d.Employees)) * 1000;
             d.TaxesPaidEmp = d.PreTaxIncomeEmp - d.IncomeEmp;
             d.CostEmp = (Number(d.Cost)/Number(d.Employees)) * 1000;
-            if (d.IncomeEmp <= 0 || d.PreTaxIncomeEmp <= 0) {
-            	d.Salary100KEmp = 0;
-            } else {
-            	d.Salary100KEmp = (d.IncomeEmp/d.PreTaxIncomeEmp) * 100;	
-            }
-            d.Salary100K = (Number(d.Employees)/10);
-            if (d.Salary100K < 0) {
-            	d.Salary100K = 0;
-            }
 			return d;
 		})
 	}
@@ -236,7 +225,7 @@
     			}))
     			.enter().append("g");
 
-            var columns = ["Revenue","Cost","GrossProfit","Admin","RandD","Operating","PreTaxIncome","TaxesPaid","Income","Salary100K"];
+            var columns = ["Revenue","Cost","GrossProfit","Admin","RandD","Operating","PreTaxIncome","TaxesPaid","Income"];
             
             var color = d3.scale.category20();
             
@@ -616,16 +605,8 @@
 		            return x0(amount) - 30;                	
                 })
 	 	      .text(function(d) {
-	 	    	 var amount = Number(d[sortColumn]);
-	 	    	  if (sortColumn == "Salary100KEmp" && amount > 0) {
-	 	    		  return ((100/d.PreTaxIncomeEmp).toPrecision(1) * 100) + "% of Pre-Tax Income";
-	 	    	  } else if (sortColumn == "Salary100KEmp") {
-	 	    		  //return "Insufficient Income";
-	 	    		  return ""; //Not sure that this looks good with the above text. Very controversial to put there too
-	 	    	  } else {
 	 	    		  return "";
-	 	    	  }
-	 	      })
+	 	    })
 	 	    
  	 	    d3.select("#xAxisLabel").text(label);
 
@@ -641,7 +622,6 @@
           d3.select("#sortByPreTaxIncome").on("click", function() { return sortBy("PreTaxIncome", "Pre-Tax Income (Billions)", false, 6); });
           d3.select("#sortByTaxPaid").on("click", function() { return sortBy("TaxesPaid", "Tax Paid (Billions)", true, 7); });
 		  d3.select("#sortByIncome").on("click", function() { return sortBy("Income", "Income (Billions)", false, 8); });
-          d3.select("#sort100K").on("click", function() { return sortBy("Salary100K", "Cost of 100K Salary Increase (Billions)", false, 9); });		  
 		  
 		  
 		  d3.select("#sortRevenueEmployee").on("click", function() { return sortByPerEmployee("RevenueEmp", "Revenue Per Employee (Thousands)", false, 0); });
@@ -653,7 +633,6 @@
 		  d3.select("#sortPreTaxIncomeEmployee").on("click", function() { return sortByPerEmployee("PreTaxIncomeEmp", "Pre-Tax Income Per Employee (Thousands)", false, 6); });
           d3.select("#sortByTaxPaidEmployee").on("click", function() { return sortByPerEmployee("TaxesPaidEmp", "Tax Paid Per Employee (Thousands)", true, 7); });
 		  d3.select("#sortIncomeEmployee").on("click", function() { return sortByPerEmployee("IncomeEmp", "Income Per Employee (Thousands)", false, 8); });
-		  d3.select("#sort100KEmployee").on("click", function() { return sortByPerEmployee("Salary100KEmp", "Cost of 100K Salary Increase For Each Employee (Thousands)", false, 9); });
 		  
 		  
   		d3.csv("data/10CompanyFinancials.csv", function(error, _data) {
@@ -670,12 +649,12 @@
 			});
 
 		  
-		  //This makes salary available to the world. amd is Asynchronous Module Definition. When using the bang function convention
-		  //to define this module you need to put the following block to to expose salary to the world.
+		  //This makes finance available to the world. amd is Asynchronous Module Definition. When using the bang function convention
+		  //to define this module you need to put the following block to to expose finance to the world.
 		  if (typeof define === "function" && define.amd) 
-			  define(salary); 
+			  define(finance); 
 		  else if (typeof module === "object" && module.exports) 
-			  module.exports = salary;
-		  this.salary = salary;		  
+			  module.exports = finance;
+		  this.finance = finance;		  
 		  
 }();		  	
